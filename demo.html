@@ -237,7 +237,8 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:9090';
+        const API_BASE = 'https://f2c7f522-ef47-48ce-a429-3fc2f15d2011-dev.e1-us-east-azure.choreoapis.dev/hotel-api/hotel-api-service/v1.0';
+        const TEST_KEY = 'eyJraWQiOiJnYXRld2F5X2NlcnRpZmljYXRlX2FsaWFzIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI3NGMzZmYyMC01NzNiLTRhMjQtOGFiZi03MjA3ZTNmOTUwOThAY2FyYm9uLnN1cGVyIiwiYXVkIjoiY2hvcmVvOmRlcGxveW1lbnQ6c2FuZGJveCIsIm9yZ2FuaXphdGlvbiI6eyJ1dWlkIjoiZjJjN2Y1MjItZWY0Ny00OGNlLWE0MjktM2ZjMmYxNWQyMDExIn0sImlzcyI6Imh0dHBzOlwvXC9zdHMuY2hvcmVvLmRldjo0NDNcL2FwaVwvYW1cL3B1Ymxpc2hlclwvdjJcL2FwaXNcL2ludGVybmFsLWtleSIsImtleXR5cGUiOiJTQU5EQk9YIiwic3Vic2NyaWJlZEFQSXMiOlt7InN1YnNjcmliZXJUZW5hbnREb21haW4iOm51bGwsIm5hbWUiOiJob3RlbC1hcGktc2VydmljZSAtIGhvdGVsLWFwaSIsImNvbnRleHQiOiJcL2YyYzdmNTIyLWVmNDctNDhjZS1hNDI5LTNmYzJmMTVkMjAxMVwvaG90ZWwtYXBpXC9ob3RlbC1hcGktc2VydmljZVwvdjEuMCIsInB1Ymxpc2hlciI6ImNob3Jlb19wcm9kX2FwaW1fYWRtaW4iLCJ2ZXJzaW9uIjoidjEuMCIsInN1YnNjcmlwdGlvblRpZXIiOm51bGx9XSwiZXhwIjoxNzUzODYwMzk1LCJ0b2tlbl90eXBlIjoiSW50ZXJuYWxLZXkiLCJpYXQiOjE3NTM4NTk3OTUsImp0aSI6IjNiOTM1OTA3LTYwNzktNDI0MC04MGZhLTJlMWJkYjc1OGRkNiJ9.NO8pWhDdeQl7OUqCN84ZgW_l24F6Z46rlsznzXPHMoRtflhex3jF_tGKQm4l196NXQTx-7sMOE7UOnPZHTp88Qxe-wJc39ip3ySl__uYJqoBiMehq9zt0f8fzYVtOugxC-TzZ75wzCpMvSHH0N_jDOvteFgd_06_aoZdhrmVLVhQRFYghBD-SCbzE33axmB0yzhyr4nFknIap6_uT3nKvqg1lOHjjlzZVZZkHKvKYJirrbVvY7i07f0wErAWEwm04Vsj0c6Nyiw0HCzq6sH-NJ3lC9y3Bh42CPWWBjxusgi8q6Rr0RyiHESemjY-yvO_3DV3sq-vkR6hct8cedHd_VCkF2Hz8p4jDkNNQfBdKcHC7KIKmthbiTyRHF7Mn967D1S8TFwzZsuYm9A_qjQqCgyOxML9JQ3iEsjmUP3mRemDAbAELHuetN01VP-wqg0k9nJHHFbvFYexsoW0sXg78hWl0el825vQgDlWwRkl-YMMMnKKfEd3lPmvxRVpO-0yZV0hElI15O-vDm9RwRz0s41W-RghVJnZ6hR6oIVT39JvbqCN5nUFTMtkpuRgt6OxPubak2S54dhtvSOtpcakYyIlfeUPvxOZHSp3VpMzvvkb4scrp4MFzrXp63yA_2G_ZN7MC7hsrmEz-Bjv78MEcfMOpWaGid8QuvC51uCLV24';
         
         // Set default dates
         const today = new Date();
@@ -274,7 +275,11 @@
                 if (minRating) params.append('minRating', minRating);
                 if (sortBy) params.append('sortBy', sortBy);
                 
-                const response = await fetch(`${API_BASE}/hotels/search?${params}`);
+                const response = await fetch(`${API_BASE}/hotels/search?${params}`, {
+                    headers: {
+                        'Test-Key': TEST_KEY
+                    }
+                });
                 const data = await response.json();
                 
                 if (!response.ok) {
@@ -339,7 +344,11 @@
         
         async function viewHotelDetails(hotelId) {
             try {
-                const response = await fetch(`${API_BASE}/hotels/${hotelId}`);
+                const response = await fetch(`${API_BASE}/hotels/${hotelId}`, {
+                    headers: {
+                        'Test-Key': TEST_KEY
+                    }
+                });
                 const data = await response.json();
                 
                 alert(`Hotel Details for ${data.hotel.hotelName}:
@@ -378,7 +387,11 @@ Cancellation: ${data.hotel.checkInOutPolicy.cancellationPolicy}`);
                     guests: guests
                 });
                 
-                const response = await fetch(`${API_BASE}/hotels/${hotelId}/availability?${params}`);
+                const response = await fetch(`${API_BASE}/hotels/${hotelId}/availability?${params}`, {
+                    headers: {
+                        'Test-Key': TEST_KEY
+                    }
+                });
                 const data = await response.json();
                 
                 const roomsInfo = data.availableRooms.map(room => 
@@ -398,7 +411,11 @@ ${roomsInfo}`);
         
         async function viewAttractions(hotelId) {
             try {
-                const response = await fetch(`${API_BASE}/hotels/${hotelId}/attractions`);
+                const response = await fetch(`${API_BASE}/hotels/${hotelId}/attractions`, {
+                    headers: {
+                        'Test-Key': TEST_KEY
+                    }
+                });
                 const data = await response.json();
                 
                 const attractionsInfo = data.attractions.map(attraction => 
