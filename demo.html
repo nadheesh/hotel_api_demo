@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel API Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, select, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .results {
+            margin-top: 20px;
+        }
+        
+        .hotel-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: white;
+        }
+        
+        .hotel-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .hotel-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        
+        .hotel-rating {
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: auto;
+        }
+        
+        .hotel-location {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .hotel-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .hotel-amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .amenity {
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #495057;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .metadata {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-small:hover {
+            background: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏨 Hotel API Demo</h1>
+        
+        <div class="search-form">
+            <div class="form-group">
+                <label for="destination">Destination:</label>
+                <input type="text" id="destination" placeholder="e.g., New York, Miami">
+            </div>
+            
+            <div class="form-group">
+                <label for="checkIn">Check-in Date:</label>
+                <input type="date" id="checkIn">
+            </div>
+            
+            <div class="form-group">
+                <label for="checkOut">Check-out Date:</label>
+                <input type="date" id="checkOut">
+            </div>
+            
+            <div class="form-group">
+                <label for="guests">Guests:</label>
+                <select id="guests">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="minPrice">Min Price ($):</label>
+                <input type="number" id="minPrice" placeholder="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="maxPrice">Max Price ($):</label>
+                <input type="number" id="maxPrice" placeholder="1000">
+            </div>
+            
+            <div class="form-group">
+                <label for="minRating">Min Rating:</label>
+                <select id="minRating">
+                    <option value="">Any</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                    <option value="4.5">4.5+</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="sortBy">Sort By:</label>
+                <select id="sortBy">
+                    <option value="">Default</option>
+                    <option value="price">Price</option>
+                    <option value="rating">Rating</option>
+                    <option value="name">Name</option>
+                </select>
+            </div>
+        </div>
+        
+        <button onclick="searchHotels()" style="width: 100%;">🔍 Search Hotels</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:9090';
+        
+        // Set default dates
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dayAfter = new Date(today);
+        dayAfter.setDate(dayAfter.getDate() + 2);
+        
+        document.getElementById('checkIn').value = tomorrow.toISOString().split('T')[0];
+        document.getElementById('checkOut').value = dayAfter.toISOString().split('T')[0];
+        
+        async function searchHotels() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">🔍 Searching hotels...</div>';
+            
+            try {
+                const params = new URLSearchParams();
+                
+                const destination = document.getElementById('destination').value;
+                const checkIn = document.getElementById('checkIn').value;
+                const checkOut = document.getElementById('checkOut').value;
+                const guests = document.getElementById('guests').value;
+                const minPrice = document.getElementById('minPrice').value;
+                const maxPrice = document.getElementById('maxPrice').value;
+                const minRating = document.getElementById('minRating').value;
+                const sortBy = document.getElementById('sortBy').value;
+                
+                if (destination) params.append('destination', destination);
+                if (checkIn) params.append('checkInDate', checkIn);
+                if (checkOut) params.append('checkOutDate', checkOut);
+                if (guests) params.append('guests', guests);
+                if (minPrice) params.append('minPrice', minPrice);
+                if (maxPrice) params.append('maxPrice', maxPrice);
+                if (minRating) params.append('minRating', minRating);
+                if (sortBy) params.append('sortBy', sortBy);
+                
+                const response = await fetch(`${API_BASE}/hotels/search?${params}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Search failed');
+                }
+                
+                displayResults(data);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (data.hotels.length === 0) {
+                resultsDiv.innerHTML = '<div class="loading">😕 No hotels found matching your criteria.</div>';
+                return;
+            }
+            
+            const metadataHtml = `
+                <div class="metadata">
+                    📊 Found ${data.metadata.totalResults} hotels 
+                    (Page ${data.metadata.currentPage} of ${data.metadata.totalPages})
+                </div>
+            `;
+            
+            const hotelsHtml = data.hotels.map(hotel => `
+                <div class="hotel-card">
+                    <div class="hotel-header">
+                        <h3 class="hotel-name">${hotel.hotelName}</h3>
+                        <div class="hotel-rating">⭐ ${hotel.rating} (${hotel.reviewCount} reviews)</div>
+                    </div>
+                    
+                    <div class="hotel-location">📍 ${hotel.address}, ${hotel.city}, ${hotel.country}</div>
+                    
+                    <div class="hotel-price">💰 From $${hotel.lowestPrice}/night</div>
+                    
+                    <p>${hotel.description}</p>
+                    
+                    <div class="hotel-amenities">
+                        ${hotel.amenities.map(amenity => `<span class="amenity">${amenity}</span>`).join('')}
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn-small" onclick="viewHotelDetails('${hotel.hotelId}')">
+                            📋 View Details
+                        </button>
+                        <button class="btn-small" onclick="checkAvailability('${hotel.hotelId}')">
+                            📅 Check Availability
+                        </button>
+                        <button class="btn-small" onclick="viewAttractions('${hotel.hotelId}')">
+                            🗺️ Nearby Attractions
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            resultsDiv.innerHTML = metadataHtml + hotelsHtml;
+        }
+        
+        async function viewHotelDetails(hotelId) {
+            try {
+                const response = await fetch(`${API_BASE}/hotels/${hotelId}`);
+                const data = await response.json();
+                
+                alert(`Hotel Details for ${data.hotel.hotelName}:
+                
+🏨 ${data.hotel.hotelName}
+📍 ${data.hotel.address}, ${data.hotel.city}
+⭐ Rating: ${data.hotel.rating}/5 (${data.hotel.reviewCount} reviews)
+💰 From: $${data.hotel.lowestPrice}/night
+🛏️ Rooms available: ${data.rooms.length}
+📝 Recent reviews: ${data.recentReviews.length}
+🗺️ Nearby attractions: ${data.nearbyAttractions.length}
+
+Check-in: ${data.hotel.checkInOutPolicy.checkInTime}
+Check-out: ${data.hotel.checkInOutPolicy.checkOutTime}
+Cancellation: ${data.hotel.checkInOutPolicy.cancellationPolicy}`);
+                
+            } catch (error) {
+                alert('❌ Error loading hotel details: ' + error.message);
+            }
+        }
+        
+        async function checkAvailability(hotelId) {
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            const guests = document.getElementById('guests').value;
+            
+            if (!checkIn || !checkOut) {
+                alert('Please select check-in and check-out dates first!');
+                return;
+            }
+            
+            try {
+                const params = new URLSearchParams({
+                    checkInDate: checkIn,
+                    checkOutDate: checkOut,
+                    guests: guests
+                });
+                
+                const response = await fetch(`${API_BASE}/hotels/${hotelId}/availability?${params}`);
+                const data = await response.json();
+                
+                const roomsInfo = data.availableRooms.map(room => 
+                    `🛏️ ${room.roomName} - $${room.pricePerNight}/night (${room.availableCount} available)`
+                ).join('\\n');
+                
+                alert(`Availability for ${checkIn} to ${checkOut}:
+                
+Total rooms available: ${data.totalAvailable}
+
+${roomsInfo}`);
+                
+            } catch (error) {
+                alert('❌ Error checking availability: ' + error.message);
+            }
+        }
+        
+        async function viewAttractions(hotelId) {
+            try {
+                const response = await fetch(`${API_BASE}/hotels/${hotelId}/attractions`);
+                const data = await response.json();
+                
+                const attractionsInfo = data.attractions.map(attraction => 
+                    `📍 ${attraction.name} (${attraction.category}) - ${attraction.distance}km away`
+                ).join('\\n');
+                
+                alert(`Nearby Attractions:
+                
+${attractionsInfo}`);
+                
+            } catch (error) {
+                alert('❌ Error loading attractions: ' + error.message);
+            }
+        }
+        
+        // Load all hotels on page load
+        window.onload = function() {
+            searchHotels();
+        };
+    </script>
+</body>
+</html>
