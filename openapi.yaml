@@ -99,30 +99,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorPayload'
- 
-    get:
-      operationId: getHotelsHotelidAttractions
-      parameters:
-      - name: hotelId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NearbyAttractionsResponse'
-        "404":
-          description: NotFound
-        "400":
-          description: BadRequest
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorPayload'
   /hotels/{hotelId}:
     get:
       operationId: getHotelsHotelid
@@ -185,6 +161,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AvailabilityResponse'
+        "404":
+          description: NotFound
+        "400":
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /hotels/{hotelId}/attractions:
+    get:
+      operationId: getHotelsHotelidAttractions
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NearbyAttractionsResponse'
         "404":
           description: NotFound
         "400":
